@@ -4,16 +4,7 @@
 """
 ZoneShah - Zone Transfer Vulnerability Scanner
 Developed by: Shahwar Shah
-Version: 1.3
-Description:
-    - A professional and powerful domain zone transfer vulnerability scanner.
-    - Supports scanning from file (-f) or single domain (-u).
-    - Verbose mode to track scanning process (-v).
-    - Always shows failed zone transfers per domain.
-    - High accuracy with no false positives or false negatives.
-    - Colorful and clear output for better visibility.
-    - Only displays vulnerable domains.
-    - Developed with ❤️ by Shahwar Shah
+Version: 1.4
 """
 
 import argparse
@@ -36,7 +27,7 @@ def banner():
  ███████╗╚██████╔╝██║ ╚████║███████╗╚██████╔╝██║  ██║ ██║  ██╗
  ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝
                                                                 
-            Zone Transfer Scanner by Shahwar Shah | v1.3
+            Zone Transfer Scanner by Shahwar Shah | v1.4
     """, "cyan", attrs=["bold"]))
 
 def get_ns_records(domain):
@@ -49,8 +40,7 @@ def get_ns_records(domain):
 def attempt_zone_transfer(domain, verbose=False):
     ns_servers = get_ns_records(domain)
     if not ns_servers:
-        print(colored(f"[!] No NS records found for domain: {domain}", "yellow", attrs=["bold"]))
-        return False
+        return False  # Quietly skip domains with no NS records
 
     zone_transfer_successful = False
     failed_ns = []
@@ -61,21 +51,17 @@ def attempt_zone_transfer(domain, verbose=False):
                 print(colored(f"[*] Trying zone transfer from NS: {ns} for domain: {domain}", "blue"))
             zone = dns.zone.from_xfr(dns.query.xfr(ns, domain, timeout=5))
             if zone:
-                print(colored(f"\n[+] VULNERABLE DOMAIN FOUND:", "red", attrs=["bold"]))
-                print(colored(f"    {domain}", "red", attrs=["bold", "underline"]))
-                print(colored(f"    Zone transferred from NS server: {ns}\n", "yellow"))
+                print(colored(f"[+] Zone Transfer SUCCESS: {domain}", "green", attrs=["bold"]))
+                print(colored(f"    NS Server: {ns}\n", "green"))
                 zone_transfer_successful = True
-                break  # Stop after first successful transfer
+                break
         except Exception:
             failed_ns.append(ns)
             if verbose:
-                print(colored(f"[-] Zone transfer failed from NS: {ns} for domain: {domain}", "yellow"))
+                print(colored(f"[-] Zone transfer failed from NS: {ns}", "yellow"))
 
-    # Show failed NS servers always if no zone transfer succeeded
-    if failed_ns and not zone_transfer_successful:
-        failed_list = ", ".join(failed_ns)
-        print(colored(f"[!] Zone transfer failed for domain: {domain}", "yellow", attrs=["bold"]))
-        print(colored(f"    Failed NS servers: {failed_list}\n", "yellow"))
+    if not zone_transfer_successful:
+        print(colored(f"[-] Zone Transfer FAILED: {domain}", "yellow", attrs=["bold"]))
 
     return zone_transfer_successful
 
@@ -84,12 +70,10 @@ def scan_domains(domains, verbose=False):
     for domain in domains:
         domain = domain.strip()
         if domain:
-            if verbose:
-                print(colored(f"[*] Scanning domain: {domain}", "cyan"))
             if attempt_zone_transfer(domain, verbose):
                 found_any = True
     if not found_any:
-        print(colored("[*] No vulnerable domains found.", "green", attrs=["bold"]))
+        print(colored("[*] No vulnerable domains found.", "cyan", attrs=["bold"]))
 
 def main():
     parser = argparse.ArgumentParser(
@@ -98,7 +82,7 @@ def main():
     )
     parser.add_argument("-u", help="Scan a single domain")
     parser.add_argument("-f", help="Scan a list of domains from file")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output to show scan progress")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
 
     args = parser.parse_args()
     banner()
