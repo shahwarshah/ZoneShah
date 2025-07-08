@@ -30,10 +30,9 @@
 
 ```bash
 pip install dnspython termcolor
-Usage
-bash
-Copy
-Edit
+
+## Usage
+
 usage: scanner.py [-h] [-u DOMAIN] [-f FILE] [-v]
 
 ZoneShah - Zone Transfer Vulnerability Scanner by Shahwar Shah
@@ -46,42 +45,35 @@ optional arguments:
 Examples
 Scan a single domain quietly:
 
-bash
-Copy
-Edit
+
 python3 scanner.py -u example.com
 Scan a single domain with verbose output:
 
-bash
-Copy
-Edit
+
 python3 scanner.py -u example.com -v
 Scan multiple domains from a file quietly:
 
-bash
-Copy
-Edit
+
 python3 scanner.py -f domains.txt
 Scan multiple domains with verbose output:
 
-bash
-Copy
-Edit
+
 python3 scanner.py -f domains.txt -v
-How it Works
+
+## How it Works
 ZoneShah fetches the authoritative name servers (NS records) for each domain and attempts a DNS zone transfer (AXFR) from those NS servers. If the zone transfer is successful, it indicates a serious vulnerability that could expose the entire DNS zone data.
 
-Contribution
+## Contribution
 Contributions, issues, and feature requests are welcome! Feel free to check issues and submit pull requests.
 
-License
+## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-Appreciation
+## Appreciation
 Thank you for using ZoneShah! Your support and feedback keep this project alive and growing.
 Developed with ❤️ by Shahwar Shah.
 
-Contact
+## Contact
 GitHub: https://github.com/yourusername/ZoneShah
 
 Email: sshahwar2007@gmail.com
